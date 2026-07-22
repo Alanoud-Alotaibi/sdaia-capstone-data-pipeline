@@ -1,6 +1,6 @@
 """
 Configuration module for SDAIA Capstone.
-Centralized configuration for paths, Kafka, environment detection.
+Centralized configuration for paths, Kafka, environment detection, and quality settings.
 """
 
 import os
@@ -12,53 +12,53 @@ IN_WINDOWS = sys.platform == "win32"
 
 # Data paths
 if IN_COLAB:
-    RAW_DIR = "/content/capstone-data/raw"
-    DELTA_DIR = "/content/capstone-data/delta"
-    CHROMA_DIR = "/content/capstone-data/chroma"
-    BM25_INDEX_PATH = "/content/capstone-data/bm25_index.pkl"
-    QUARANTINE_PATH = "/content/capstone-data/quarantine/quarantine.jsonl"
-    LINEAGE_PATH = "/content/capstone-data/lineage_events.jsonl"
+    DATA_BASE = "/content/capstone-data"
 else:
-    RAW_DIR = "./data/raw"
-    DELTA_DIR = "./data/delta"
-    CHROMA_DIR = "./data/chroma"
-    BM25_INDEX_PATH = "./data/bm25_index.pkl"
-    QUARANTINE_PATH = "./data/quarantine/quarantine.jsonl"
-    LINEAGE_PATH = "./data/lineage_events.jsonl"
+    DATA_BASE = "./data"
 
-# Create directories
-os.makedirs(RAW_DIR, exist_ok=True)
-os.makedirs(DELTA_DIR, exist_ok=True)
-os.makedirs(CHROMA_DIR, exist_ok=True)
-os.makedirs(os.path.dirname(QUARANTINE_PATH), exist_ok=True)
-os.makedirs(os.path.dirname(LINEAGE_PATH), exist_ok=True)
+RAW_DIR = os.path.join(DATA_BASE, "raw")
+DELTA_DIR = os.path.join(DATA_BASE, "delta")
+CHROMA_DIR = os.path.join(DATA_BASE, "chroma")
+BM25_INDEX_PATH = os.path.join(DATA_BASE, "bm25_index.pkl")
+QUARANTINE_PATH = os.path.join(DATA_BASE, "quarantine", "quarantine.jsonl")
+LINEAGE_PATH = os.path.join(DATA_BASE, "lineage_events.jsonl")
+
+# Ensure required directories exist
+for path in [RAW_DIR, DELTA_DIR, CHROMA_DIR, os.path.dirname(QUARANTINE_PATH), os.path.dirname(LINEAGE_PATH)]:
+    os.makedirs(path, exist_ok=True)
 
 # Kafka configuration
-KAFKA_BOOTSTRAP = "localhost:9092"
+KAFKA_BOOTSTRAP = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092")
 TOPIC_RAW = "support-tickets-raw"
 TOPIC_VALID = "support-tickets-valid"
 TOPIC_DLQ = "support-tickets-dlq"
 
-# Column mapping (for Kaggle CRM dataset)
+# Column mapping (aligned 1:1 with Kaggle Customer Support Tickets CRM Dataset)
 COLUMN_MAP = {
-    "Ticket ID": "ticket_id",
-    "Customer Name": "customer_name",
-    "Priority": "priority",
-    "Status": "status",
-    "Satisfaction score": "satisfaction_score",
-    "Resolution time": "resolution_time",
-    "Description": "description",
+    "Ticket_ID": "ticket_id",
+    "Customer_Name": "customer_name",
+    "Customer_Email": "customer_email",
+    "Ticket_Subject": "ticket_subject",
+    "Ticket_Description": "ticket_description",
+    "Issue_Category": "issue_category",
+    "Priority_Level": "priority_level",
+    "Ticket_Channel": "ticket_channel",
+    "Submission_Date": "submission_date",
+    "Resolution_Time_Hours": "resolution_time_hours",
+    "Assigned_Agent": "assigned_agent",
+    "Satisfaction_Score": "satisfaction_score",
 }
 
 # Quality thresholds
-QUALITY_THRESHOLD = 0.80  # 80% quality score required
-MAX_DUPLICATES = 200
-MAX_NULL_RECORDS = 50
+QUALITY_THRESHOLD = 0.80  # 80% minimum quality score required
+MAX_DUPLICATES_ALLOWED = 50
+MAX_NULL_RECORDS_ALLOWED = 20
 
 # RAG configuration
-RAG_CHUNK_SIZE = 500
-RAG_CHUNK_OVERLAP = 100
+RAG_CHUNK_SIZE = 400
+RAG_CHUNK_OVERLAP = 80
 RAG_TOP_K = 5
+CROSS_ENCODER_MODEL = "cross-encoder/ms-marco-MiniLM-L-6-v2"
 
-print(f"Config loaded: IN_COLAB={IN_COLAB}, IN_WINDOWS={IN_WINDOWS}")
-print(f"Paths: RAW={RAW_DIR}, DELTA={DELTA_DIR}")
+print(f"[CONFIG] Environment: IN_COLAB={IN_COLAB}, IN_WINDOWS={IN_WINDOWS}")
+print(f"[CONFIG] Base Data Path: {os.path.abspath(DATA_BASE)}")
