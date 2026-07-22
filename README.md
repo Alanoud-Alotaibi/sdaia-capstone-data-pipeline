@@ -1,304 +1,228 @@
-"# SDAIA Capstone: Modern Data Engineering for AI System on CRM Dataset
+# SDAIA Capstone: Production Data Engineering & AI System
 
-##  Project Overview
+[![SDAIA Academy](https://img.shields.io/badge/Program-SDAIA%20Academy-blue.svg)](https://github.com/SDAIAAcademy)
+[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-brightgreen.svg)](https://python.org)
+[![Apache Spark](https://img.shields.io/badge/Spark-3.5.0-orange.svg)](https://spark.apache.org)
+[![Delta Lake](https://img.shields.io/badge/Delta%20Lake-3.2.0-blue.svg)](https://delta.io)
+[![Kafka](https://img.shields.io/badge/Apache%20Kafka-3.7.0-black.svg)](https://kafka.apache.org)
+[![Airflow](https://img.shields.io/badge/Apache%20Airflow-2.8.0-red.svg)](https://airflow.apache.org)
 
-**Program:** SDAIA Academy Data Engineering Track  
+## 📌 Project Overview & Problem Statement
 
-This capstone project integrates **5 core data engineering modules** into a production-ready data pipeline for processing customer support tickets. The system demonstrates enterprise-grade data practices including real-time ingestion, data quality validation, lakehouse architecture, retrieval-augmented generation (RAG), and orchestration.
+Raw Customer Relationship Management (CRM) ticket exports are frequently plagued by missing satisfaction scores, unstandardized priority levels, duplicate submissions, and unstructured resolution descriptions. Directly ingesting unvalidated data into analytical and AI workflows causes invalid KPI reporting and hallucinated LLM responses.
 
-##  Problem Statement
-
-Organizations struggle to process customer support tickets at scale while maintaining:
-- **Data Quality:** Validation and rejection of malformed records
-- **Scalability:** Real-time processing via message brokers
-- **Analytics:** Historical data storage with time-travel capabilities
-- **Intelligence:** AI-powered semantic search and retrieval
-- **Reliability:** Automated orchestration with failure gates
-
-##  Architecture
-
-```
-Customer Tickets (Raw Data)
-         ↓
-    ┌──KAFKA────────────────┐
-    │ Producer & Consumer   │
-    │ (kafka-python)        │
-    └──────────────────────┘
-         ↓
-    Validation (Pydantic)
-         ├─→ Valid Data → TOPIC_VALID
-         └─→ Malformed → TOPIC_DLQ → Quarantine Zone
-         
-    Validated Data
-         ↓
-    ┌─────────────────────────────────────┐
-    │   Delta Lakehouse (delta-spark)     │
-    ├─────────────────────────────────────┤
-    │ Bronze: Raw + Metadata              │
-    │ Silver: Deduplicated + MERGE Upsert │
-    │ Gold: Business Aggregates           │
-    └─────────────────────────────────────┘
-         ↓
-    Quality Gates (great-expectations)
-         ├─→ ✅ PASS → Continue
-         └─→ ❌ FAIL → AirflowException (halt downstream)
-         
-    ┌─────────────────────────────────────┐
-    │   RAG Pipeline                      │
-    ├─────────────────────────────────────┤
-    │ • Document Chunking                 │
-    │ • Vector Embeddings (Chroma)        │
-    │ • BM25 Index (rank-bm25)            │
-    │ • Hybrid Search + Reranking         │
-    │ • Grounded QA with Citations        │
-    └─────────────────────────────────────┘
-         ↓
-    Orchestration (apache-airflow)
-         ↓
-    Lineage Tracking (openlineage-python)
-```
-##  Prerequisites
-
-- Python 3.8+
-- Java Runtime (for PySpark)
-- Kafka (optional; file-based fallback included)
-- Git
-
-##  Installation
-
-### 1. Clone Repository
-```bash
-git clone https://github.com/SDAIAAcademy/sdaia-capstone-data-pipeline.git
-cd sdaia-capstone-data-pipeline
-```
-
-### 2. Create Virtual Environment
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
-
-### 3. Install Dependencies
-```bash
-pip install -q \
-    pyspark==3.5.0 delta-spark==3.2.0 \
-    kafka-python==2.0.2 "pydantic>=2.0" \
-    kagglehub chromadb sentence-transformers rank-bm25 \
-    "apache-airflow>=2.8" "great-expectations>=1.0" openlineage-python
-```
-
-### 4. Set Environment Variables (Optional)
-```bash
-# For Kaggle dataset access
-export KAGGLE_USERNAME=<your_username>
-export KAGGLE_KEY=<your_api_key>
-```
+This production-grade Data Engineering and AI pipeline ingests raw CRM support ticket data, enforces strict schema data contracts at entry, quarantines invalid records into a **Dead Letter Queue (DLQ)**, streams validated data into an **ACID-compliant Delta Lakehouse** (Bronze/Silver/Gold), executes automated **Great Expectations Quality Gates**, emits **OpenLineage** observability events, and powers a **Hybrid RAG (Retrieval-Augmented Generation)** AI system with dense-sparse search, Reciprocal Rank Fusion (RRF), Cross-Encoder reranking, and exact ticket citations.
 
 ---
 
-##  Running the Pipeline
+## 📊 Dataset Description
 
-### Option A: Jupyter Notebook (Recommended)
-```bash
-jupyter notebook "Modern Data Engineering for AI System - On CRM Dataset.ipynb"
-# Run all cells (Ctrl+Shift+Enter) for complete execution
-```
+The pipeline is built around the **Kaggle Customer Support Tickets CRM Dataset** (`customer_support_tickets.csv`), comprising 20,000 customer service ticket records with 12 core attributes:
 
-### Option B: Airflow DAG
-```bash
-# Initialize database
-airflow db init
-
-# Start webserver
-airflow webserver -p 8080
-
-# Trigger DAG in another terminal
-airflow dags trigger capstone_dag
-```
-
-### Option C: Full Pipeline Run
-```bash
-python -c "
-import sys; sys.path.insert(0, '.')
-from src.dag_pipeline import run_pipeline
-run_pipeline()
-"
-```
-
----
-
-##  Project Structure
-
-```
-.
-├── Modern Data Engineering for AI System - On CRM Dataset.ipynb
-├── README.md
-├── requirements.txt
-├── .gitignore
-└── src/
-    ├── __init__.py
-    ├── config.py                 # Configuration (paths, Kafka, env)
-    ├── kafka_io.py               # Producer/Consumer (kafka-python)
-    ├── synthetic_data.py         # Test data generation
-    ├── tasks.py                  # TaskFlow tasks
-    ├── lakehouse.py              # Delta operations (delta-spark)
-    ├── quality.py                # Quality checks (great-expectations)
-    ├── lineage.py                # Lineage events (openlineage-python)
-    └── rag.py                    # RAG pipeline (chromadb, BM25)
-```
-
----
-
-##  Key Features
-
-### 1️⃣ **Ingestion**
-- ✅ Real **kafka-python** producer/consumer
-- ✅ **Pydantic** schema validation
-- ✅ Dead-letter topic routing
-- ✅ Malformed records logged with rejection reason
-- **Proof:** Cell 24 output shows DLQ routing
-
-### 2️⃣ **Delta Lakehouse**
-- ✅ Bronze layer: Raw + ingestion metadata
-- ✅ Silver layer: MERGE upsert on ticket_id (business key)
-- ✅ Schema enforcement (Delta validates writes)
-- ✅ Gold layer: Real aggregates (not just copies)
-- **Proof:** Cells 16-21 show delta-spark MERGE operations
-
-### 3️⃣ **RAG Pipeline**
-- ✅ Document chunking (500 char + overlap)
-- ✅ Vector embeddings (sentence-transformers → chromadb)
-- ✅ BM25 keyword index (rank-bm25)
-- ✅ Hybrid search (vector + BM25 combined)
-- ✅ Reranking (cross-encoder)
-- ✅ Grounded answers with citations
-- **Proof:** Cells 40-43 demonstrate query examples
-
-### 4️⃣ **Orchestration**
-- ✅ Airflow TaskFlow API (@task decorators)
-- ✅ Correct dependencies (produce → validate → bronze → silver → gold → quality_gate → rag)
-- ✅ Quality gate halts downstream on failure
-- ✅ Lineage events emitted (START/COMPLETE/FAIL)
-- **Proof:** Cell 21 defines DAG with task dependencies
-
-### 5️⃣ **Quality + Lineage**
-- ✅ Great Expectations checks (schema, duplicates, nulls)
-- ✅ Quality gate blocks pipeline if score < 80%
-- ✅ OpenLineage events recorded
-- ✅ Failure paths demonstrated (quarantine zone, schema violations)
-- **Proof:** Cells 34-36 show quality metrics + lineage
-
----
-
-##  Required Libraries (Real Implementations)
-
-| Component | Library | Version | Status |
+| Field Name | Type | Description | Pydantic Contract |
 |---|---|---|---|
-| Message Queue | kafka-python | ≥ 2.0.2 | ✅ |
-| DataFrame | pyspark | ≥ 3.5.0 | ✅ |
-| Lakehouse | delta-spark | ≥ 3.2.0 | ✅ |
-| Vector Store | chromadb | ≥ 0.4.0 | ✅ |
-| Embeddings | sentence-transformers | ≥ 2.0.0 | ✅ |
-| Keyword Search | rank-bm25 | ≥ 0.2.1 | ✅ |
-| Validation | pydantic | ≥ 2.0 | ✅ |
-| Quality | great-expectations | ≥ 1.0 | ✅ |
-| Orchestration | apache-airflow | ≥ 2.8 | ✅ |
-| Lineage | openlineage-python | Latest | ✅ |
-
-**No Simulations:** All components use real production libraries. File-based fallback used only for Kafka on Windows (environment detection).
-
----
-
-##  Expected Output
-
-### ✅ Successful Run
-```
-Step 1: Ingestion
-✅ Produced 3000 records to support-tickets-raw topic
-✅ Validated 2850 records → support-tickets-valid topic
-✅ Quarantined 150 malformed records with rejection reasons
-
-Step 2: Delta Lakehouse
-✅ Bronze: 2850 records loaded with metadata
-✅ Silver: MERGE upsert completed (15 duplicates deduplicated)
-✅ Gold: Aggregates computed (12 statuses, 5 severity levels)
-
-Step 3: Quality Gate
-✅ Data quality score: 95%
-✅ Duplicate check: PASS
-✅ Null values check: PASS
-✅ Schema validation: PASS
-
-Step 4: RAG Pipeline
-✅ Embeddings: 284 document chunks vectorized
-✅ BM25 index: 2850 documents indexed
-✅ Sample query: "How do I get a refund?" → 5 results ranked
-
-Step 5: Orchestration
-✅ Airflow DAG: All tasks COMPLETED
-✅ Lineage: 5 events recorded
-✅ Status: SUCCESS
-```
-
-### ❌ Failure Case (Quality Gate)
-```
-Step 2: Delta Lakehouse
-✅ Silver: MERGE upsert completed
-
-Step 3: Quality Gate
-❌ FAILED: Quality score 72% < threshold 80%
-   - Duplicates: 450 (expected < 200)
-   - Null values: 120 (expected < 50)
-
-🛑 PIPELINE HALTED
-   - Downstream tasks (RAG, metrics) NOT executed
-   - Airflow raises AirflowException
-   - Manual intervention required
-```
+| `Ticket_ID` | String | Unique ticket primary key (e.g. `TKT-100000`) | Required, Non-empty, Unique |
+| `Customer_Name` | String | Full name of submitting customer | Required, Non-null |
+| `Customer_Email` | String | Customer contact email address | Valid email string |
+| `Ticket_Subject` | String | Short subject summary of issue | Optional string |
+| `Ticket_Description` | Text | Detailed ticket text description | Chunked for RAG embeddings |
+| `Issue_Category` | String | Categorization (`Technical`, `Account`, `Billing`, `General Inquiry`, `Product Feedback`) | Categorical validation |
+| `Priority_Level` | String | Ticket priority (`Low`, `Medium`, `High`, `Critical`) | Value set check |
+| `Ticket_Channel` | String | Ingestion channel (`Web Form`, `Chat`, `Email`, `Phone`) | Channel tracking |
+| `Submission_Date` | Date | Ticket submission timestamp (`YYYY-MM-DD`) | ISO Date format |
+| `Resolution_Time_Hours` | Numeric | Hours taken to resolve ticket | Numeric >= 0 |
+| `Assigned_Agent` | String | Assigned support representative | Agent attribution |
+| `Satisfaction_Score` | Numeric | Customer rating score (1 to 5) | Constrained: `1.0 <= score <= 5.0` |
 
 ---
 
-##  Failure Paths Demonstrated
+## 🏗️ End-to-End System Architecture
 
-| Scenario | Evidence | Cell |
+```mermaid
+flowchart TD
+    subgraph Ingestion ["1. Streaming & Ingestion (Kafka + Pydantic)"]
+        CSV[customer_support_tickets.csv] --> PROD[Kafka Producer]
+        PROD --> RAW[Topic: support-tickets-raw]
+        RAW --> PYD{Pydantic Schema Validation}
+        PYD -->|Valid Records| VAL[Topic: support-tickets-valid]
+        PYD -->|Invalid / Malformed| DLQ[Topic: support-tickets-dlq & Quarantine JSONL]
+    end
+
+    subgraph Lakehouse ["2. Delta Lakehouse Architecture"]
+        VAL --> BRONZE[(Delta Bronze Layer\nRaw + System Metadata)]
+        BRONZE --> MERGE{Delta MERGE Upsert\non Ticket_ID}
+        MERGE --> SILVER[(Delta Silver Layer\nCleaned & Deduplicated)]
+    end
+
+    subgraph Governance ["3. Data Quality & Observability"]
+        SILVER --> GE{Great Expectations\nQuality Gate >= 80%}
+        GE -->|Fails < 80%| HALT[Halt Downstream Pipeline]
+        GE -->|Passes >= 80%| LINEAGE[OpenLineage Event Tracker\nSTART / COMPLETE / FAIL]
+    end
+
+    subgraph Analytics ["4. Gold Business Layer"]
+        LINEAGE --> GOLD1[(Gold Category Metrics)]
+        LINEAGE --> GOLD2[(Gold Agent Performance)]
+        LINEAGE --> GOLD3[(Gold SLA Breach Analysis)]
+    end
+
+    subgraph RAG_AI ["5. AI Systems & Hybrid RAG"]
+        GOLD1 & GOLD2 --> CHUNK[Document Chunking & Overlap]
+        CHUNK --> VECT[(ChromaDB Vector Store)]
+        CHUNK --> BM25[(BM25 Sparse Keyword Index)]
+        VECT & BM25 --> RRF[Reciprocal Rank Fusion RRF]
+        RRF --> RERANK[Cross-Encoder Reranker]
+        RERANK --> ANS[Grounded Answer & Citations]
+    end
+
+    subgraph Orchestration ["6. Apache Airflow Orchestration"]
+        AIRFLOW[Apache Airflow DAG\nTaskFlow API Orchestration] -.-> Ingestion
+        AIRFLOW -.-> Lakehouse
+        AIRFLOW -.-> Governance
+        AIRFLOW -.-> Analytics
+        AIRFLOW -.-> RAG_AI
+    end
+```
+
+---
+
+## 🛠️ Technology Stack & Production Libraries
+
+- **Data Ingestion & Streaming**: `kafka-python` / `confluent-kafka`, `pydantic v2`
+- **Lakehouse & Data Engine**: `pyspark 3.5.0`, `delta-spark 3.2.0` (ACID MERGE, Schema Enforcement)
+- **Data Quality & Governance**: `great-expectations`, `openlineage-python`
+- **Orchestration**: `apache-airflow 2.8+` (TaskFlow `@dag`, `@task`)
+- **AI & RAG Pipeline**: `chromadb`, `rank-bm25`, `sentence-transformers` (Cross-Encoder), `pandas`
+
+---
+
+## 📁 Repository Structure
+
+```
+sdaia-capstone-data-pipeline/
+├── README.md                                    # Master Technical Documentation
+├── requirements.txt                             # Production library dependencies
+├── .gitignore                                   # Workspace git exclusion rules
+├── IMPLEMENTATION_STATUS.md                     # Implementation verification checklist
+├── customer_support_tickets.csv                 # Primary CRM dataset (20,000 records)
+├── capstone_clean.ipynb                         # Clean end-to-end execution notebook
+├── Modern Data Engineering...ipynb              # Comprehensive Colab notebook
+└── src/                                         # Modular Source Code Package
+    ├── __init__.py                              # Package root
+    ├── config.py                                # Centralized configuration & environment setup
+    ├── synthetic_data.py                        # Synthetic ticket generator & malformed injection
+    ├── kafka_io.py                              # Kafka producer/consumer & Pydantic DLQ routing
+    ├── lakehouse.py                             # Delta Bronze/Silver MERGE & Gold aggregations
+    ├── quality.py                               # Great Expectations quality gate check
+    ├── lineage.py                               # OpenLineage event emitter (START/COMPLETE/FAIL)
+    ├── rag.py                                   # Hybrid RAG, RRF, Cross-Encoder & Citations
+    ├── tasks.py                                 # Traced pipeline task definitions
+    └── dag_pipeline.py                          # Airflow DAG definition & pipeline runner
+```
+
+---
+
+## 🚀 Installation & Setup Instructions
+
+### 1. Clone Repository & Setup Virtual Environment
+
+```bash
+git clone https://github.com/Alanoud-Alotaibi/sdaia-capstone-data-pipeline.git
+cd sdaia-capstone-data-pipeline
+
+# Create and activate Python virtual environment
+python -m venv venv
+source venv/bin/activate        # Linux / macOS
+# or
+.\venv\Scripts\activate          # Windows PowerShell
+```
+
+### 2. Install Production Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+## 💻 Pipeline Execution Steps
+
+### Direct Python Execution
+
+To execute the pipeline end-to-end on the CRM dataset:
+
+```bash
+python -c "from src.dag_pipeline import run_pipeline; run_pipeline('customer_support_tickets.csv')"
+```
+
+### Apache Airflow DAG Execution
+
+1. Copy or link `src/dag_pipeline.py` into your Airflow DAGs directory (`$AIRFLOW_HOME/dags`).
+2. Start Airflow Webserver and Scheduler:
+
+```bash
+airflow db init
+airflow webserver -p 8080 &
+airflow scheduler &
+```
+
+3. Enable and trigger `sdaia_capstone_pipeline_dag` via the Airflow UI (`http://localhost:8080`).
+
+---
+
+## 🔍 Verification & Audit Evidence
+
+### 1. Ingestion & Dead Letter Queue (DLQ)
+- Valid records are passed to `TOPIC_VALID`.
+- Records missing required fields (`Ticket_ID`, `Customer_Name`) or with invalid satisfaction scores (`> 5.0`) are routed to `TOPIC_DLQ` and appended to `./data/quarantine/quarantine.jsonl` with explicit rejection reasons.
+
+### 2. Delta Lakehouse MERGE & Schema Enforcement
+- **Bronze Layer**: Appends `_ingestion_time` and `_data_source`.
+- **Silver Layer**: Executes `DeltaTable.merge()` on `Ticket_ID`.
+- **Schema Enforcement**: Verified by attempting to write incompatible schema dataframes, triggering write rejection.
+
+### 3. Great Expectations Quality Gate Failure Halt
+- When quality score falls below `80.00%` (e.g., during malformed record injection), `RuntimeError` is raised, blocking downstream Gold layer and RAG pipeline execution.
+
+### 4. Hybrid RAG Citation Output Example
+```text
+Based on historical resolution data for query 'Hours of operation inquiry':
+
+Relevant support cases were identified under Category 'General Inquiry' handled by Agent David Kim.
+Key context: "Ticket ID: TKT-100000 | Customer: George Simon | Category: General Inquiry..."
+
+Source Citations:
+  - [1] Ticket ID: TKT-100000 | Category: General Inquiry | Agent: David Kim (Relevance Score: 4.5)
+  - [2] Ticket ID: TKT-100013 | Category: General Inquiry | Agent: David Kim (Relevance Score: 4.5)
+  - [3] Ticket ID: TKT-100024 | Category: General Inquiry | Agent: David Kim (Relevance Score: 4.5)
+```
+
+---
+
+## ❓ Troubleshooting Guide
+
+| Issue | Root Cause | Solution |
 |---|---|---|
-| **Malformed Record Rejection** | Missing ticket_id → routed to DLQ | 24 |
-| **Schema Enforcement** | Wrong type write → Delta raises AnalysisException | 17 |
-| **Quality Gate Halt** | 100 duplicates → quality score drops → pipeline stops | 34-36 |
-| **Quarantine Zone** | Rejection reasons logged with timestamp | 34 |
+| Kafka Producer Error | Broker not running on `localhost:9092` | Start Zookeeper & Kafka binaries or use built-in fallback validator |
+| PySpark Java Gateway Error | Missing `JAVA_HOME` or Java 8/11/17 | Ensure OpenJDK 11+ installed and set `JAVA_HOME` environment variable |
+| UnicodeEncodeError on Windows | Windows console CP1256 encoding mismatch | Set environment variable `$env:PYTHONIOENCODING='utf-8'` |
 
 ---
 
-##  How to Use This Project
+## 👥 Contributors & Git History
 
-1. **Learn:** Review the notebook cells in order (1-63)
-2. **Understand:** Read inline documentation in src/ modules
-3. **Run:** Execute all cells to see full pipeline
-4. **Extend:** Modify src/ modules for your use cases
-5. **Deploy:** Use src/dag_pipeline.py for production Airflow
-
----
-
-## Training Program Attribution
-
-**Program:** SDAIA Academy Data Engineering Track  
-**Reference:** [SDAIA Academy on GitHub](https://github.com/SDAIAAcademy)
+This project was developed by team members:
+- **Alanoud Alotaibi** ([@Alanoud-Alotaibi](https://github.com/Alanoud-Alotaibi))
+- **Rawan Alqahtani** ([@Rawan1H](https://github.com/Rawan1H))
+- **Reem Alshathri** ([@ReemAlshathri74](https://github.com/ReemAlshathri74))
 
 ---
 
-##  Troubleshooting
+## 🎓 Academic Attribution & Acknowledgments
 
-| Issue | Solution |
-|---|---|
-| Kafka connection fails | Windows detected; using file simulation  |
-| pandas OverflowError | Restart kernel after install |
-| Delta/PySpark not found | Check versions: pyspark 3.5.0, delta-spark 3.2.0 |
-| Airflow tasks skip | Check AIRFLOW_HOME and db init |
-| RAG embeddings slow | First run builds index; cached thereafter |
+This capstone project was delivered as part of the **SDAIA Academy Data Engineering Training Program**.
 
----
-
-## 📝 License
-
-MIT
-
+- **Organization**: [SDAIA Academy](https://github.com/SDAIAAcademy)
+- **Program**: Data Engineering & AI Systems Track
+- **Lead Instructor / Trainer**: Mohammed Albeladi
+- **Repository**: [https://github.com/SDAIAAcademy](https://github.com/SDAIAAcademy)

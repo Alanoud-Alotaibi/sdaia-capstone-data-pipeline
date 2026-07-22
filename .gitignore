@@ -1,54 +1,37 @@
-# Virtual Environment
-venv/
-env/
-.venv/
-
-# Jupyter
-.ipynb_checkpoints/
-*.ipynb_checkpoints/
-
-# Python
+# Python & Virtual Environment
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
-*.egg-info/
-dist/
-build/
+env/
+venv/
+ENV/
+.venv/
 
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-.DS_Store
+# Jupyter Notebook Checkpoints
+.ipynb_checkpoints/
 
-# Airflow
-airflow/
-airflow.db
-logs/
-.airflow_db
-
-# Data (generated)
-/content/
-/data/
+# Data & Lakehouse directories
+data/
+data/raw/
+data/delta/
+data/chroma/
+data/quarantine/
 *.csv
 *.parquet
 *.pkl
-
-# Environment variables
-.env
-.env.local
-
-# Kafka
-kafka_2.13-*/
-*.tgz
+*.jsonl
 *.log
 
-# Secrets (never commit)
-*.key
-*.pem
-secrets.json
-kaggle.json
+# Kafka Binaries
+kafka_*/
+kafka.tgz
+zookeeper.log
+kafka.log
+
+# IDE & OS Specific
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
