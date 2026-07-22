@@ -25,6 +25,8 @@ from src.tasks import (
 from src.synthetic_data import generate_synthetic_tickets
 
 
+dag_instance = None
+
 if HAS_AIRFLOW:
     @dag(
         dag_id="sdaia_capstone_pipeline_dag",
