@@ -212,7 +212,7 @@ Source Citations:
 
 This project was developed by team members:
 - **Alanoud Alotaibi** ([@Alanoud-Alotaibi](https://github.com/Alanoud-Alotaibi))
-- **Rawan Hamad** ([@Rawan1H](https://github.com/Rawan1H))
+- **Rawan Alqahtani** ([@Rawan1H](https://github.com/Rawan1H))
 - **Reem Alshathri** ([@ReemAlshathri74](https://github.com/ReemAlshathri74))
 
 ---
