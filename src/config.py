@@ -5,6 +5,10 @@ Centralized configuration for paths, Kafka, environment detection, and quality s
 
 import os
 import sys
+import warnings
+
+# Suppress harmless third-party platform warnings (e.g. Airflow Windows warning)
+warnings.filterwarnings("ignore")
 
 # Detect environment
 IN_COLAB = "google.colab" in sys.modules
