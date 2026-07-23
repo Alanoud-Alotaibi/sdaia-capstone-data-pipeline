@@ -7,7 +7,7 @@ All 5 capstone deliverables are fully implemented in production-grade code, veri
 ---
 
 ### Deliverable 1: Streaming Ingestion and Quality Contract (20 Points)
-- **Module**: [src/config.py](file:///c:/Users/ala11/OneDrive/Desktop/anti%20data%20eng/src/config.py), [src/kafka_io.py](file:///c:/Users/ala11/OneDrive/Desktop/anti%20data%20eng/src/kafka_io.py), [src/synthetic_data.py](file:///c:/Users/ala11/OneDrive/Desktop/anti%20data%20eng/src/synthetic_data.py)
+- **Module**: `src/config.py`, `src/kafka_io.py`, `src/synthetic_data.py`
 - **Status**: COMPLETE AND VERIFIED
 - **Features Implemented**:
   - Real `kafka-python` Producer & Consumer connected to `support-tickets-raw`, `support-tickets-valid`, and `support-tickets-dlq`.
@@ -18,7 +18,7 @@ All 5 capstone deliverables are fully implemented in production-grade code, veri
 ---
 
 ### Deliverable 2: Delta Lakehouse Architecture (25 Points)
-- **Module**: [src/lakehouse.py](file:///c:/Users/ala11/OneDrive/Desktop/anti%20data%20eng/src/lakehouse.py)
+- **Module**: `src/lakehouse.py`
 - **Status**: COMPLETE AND VERIFIED
 - **Features Implemented**:
   - **Bronze Layer**: Raw CRM dataset ingestion enriched with metadata (`_ingestion_time`, `_data_source`).
@@ -29,7 +29,7 @@ All 5 capstone deliverables are fully implemented in production-grade code, veri
 ---
 
 ### Deliverable 3: Production Hybrid RAG System (25 Points)
-- **Module**: [src/rag.py](file:///c:/Users/ala11/OneDrive/Desktop/anti%20data%20eng/src/rag.py)
+- **Module**: `src/rag.py`
 - **Status**: COMPLETE AND VERIFIED
 - **Features Implemented**:
   - Sliding window document text chunking with configurable overlap (~400 chars, ~80 overlap).
@@ -42,7 +42,7 @@ All 5 capstone deliverables are fully implemented in production-grade code, veri
 ---
 
 ### Deliverable 4: Airflow DAG Orchestration (15 Points)
-- **Module**: [src/dag_pipeline.py](file:///c:/Users/ala11/OneDrive/Desktop/anti%20data%20eng/src/dag_pipeline.py), [src/tasks.py](file:///c:/Users/ala11/OneDrive/Desktop/anti%20data%20eng/src/tasks.py)
+- **Module**: `src/dag_pipeline.py`, `src/tasks.py`
 - **Status**: COMPLETE AND VERIFIED
 - **Features Implemented**:
   - Apache Airflow DAG `sdaia_capstone_pipeline_dag` defined using TaskFlow API (`@dag`, `@task`).
@@ -54,7 +54,7 @@ All 5 capstone deliverables are fully implemented in production-grade code, veri
 ---
 
 ### Deliverable 5: Data Quality and Lineage Observability (15 Points)
-- **Module**: [src/quality.py](file:///c:/Users/ala11/OneDrive/Desktop/anti%20data%20eng/src/quality.py), [src/lineage.py](file:///c:/Users/ala11/OneDrive/Desktop/anti%20data%20eng/src/lineage.py)
+- **Module**: `src/quality.py`, `src/lineage.py`
 - **Status**: COMPLETE AND VERIFIED
 - **Features Implemented**:
   - **Great Expectations**: Validation suite checking column non-nullability, uniqueness, and numerical ranges. Enforces 80% quality score threshold, throwing `RuntimeError` on failure to halt execution.
