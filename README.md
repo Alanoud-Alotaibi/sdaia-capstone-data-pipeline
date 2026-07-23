@@ -7,7 +7,7 @@
 [![Kafka](https://img.shields.io/badge/Apache%20Kafka-3.7.0-black.svg)](https://kafka.apache.org)
 [![Airflow](https://img.shields.io/badge/Apache%20Airflow-2.8.0-red.svg)](https://airflow.apache.org)
 
-## 📌 Project Overview & Problem Statement
+## Project Overview and Problem Statement
 
 Raw Customer Relationship Management (CRM) ticket exports are frequently plagued by missing satisfaction scores, unstandardized priority levels, duplicate submissions, and unstructured resolution descriptions. Directly ingesting unvalidated data into analytical and AI workflows causes invalid KPI reporting and hallucinated LLM responses.
 
@@ -15,7 +15,7 @@ This production-grade Data Engineering and AI pipeline ingests raw CRM support t
 
 ---
 
-## 📊 Dataset Description
+## Dataset Description
 
 The pipeline is built around the **Kaggle Customer Support Tickets CRM Dataset** (`customer_support_tickets.csv`), comprising 20,000 customer service ticket records with 12 core attributes:
 
@@ -36,7 +36,7 @@ The pipeline is built around the **Kaggle Customer Support Tickets CRM Dataset**
 
 ---
 
-## 🏗️ End-to-End System Architecture
+## End-to-End System Architecture
 
 ```mermaid
 flowchart TD
@@ -86,7 +86,7 @@ flowchart TD
 
 ---
 
-## 🛠️ Technology Stack & Production Libraries
+## Technology Stack and Production Libraries
 
 - **Data Ingestion & Streaming**: `kafka-python` / `confluent-kafka`, `pydantic v2`
 - **Lakehouse & Data Engine**: `pyspark 3.5.0`, `delta-spark 3.2.0` (ACID MERGE, Schema Enforcement)
@@ -96,7 +96,7 @@ flowchart TD
 
 ---
 
-## 📁 Repository Structure
+## Repository Structure
 
 ```
 sdaia-capstone-data-pipeline/
@@ -105,8 +105,7 @@ sdaia-capstone-data-pipeline/
 ├── .gitignore                                   # Workspace git exclusion rules
 ├── IMPLEMENTATION_STATUS.md                     # Implementation verification checklist
 ├── customer_support_tickets.csv                 # Primary CRM dataset (20,000 records)
-├── capstone_clean.ipynb                         # Clean end-to-end execution notebook
-├── Modern Data Engineering...ipynb              # Comprehensive Colab notebook
+├── Modern Data Engineering...ipynb              # Comprehensive Colab & local notebook
 └── src/                                         # Modular Source Code Package
     ├── __init__.py                              # Package root
     ├── config.py                                # Centralized configuration & environment setup
@@ -122,7 +121,7 @@ sdaia-capstone-data-pipeline/
 
 ---
 
-## 🚀 Installation & Setup Instructions
+## Installation and Setup Instructions
 
 ### 1. Clone Repository & Setup Virtual Environment
 
@@ -145,7 +144,7 @@ pip install -r requirements.txt
 
 ---
 
-## 💻 Pipeline Execution Steps
+## Pipeline Execution Steps
 
 ### Direct Python Execution
 
@@ -170,7 +169,7 @@ airflow scheduler &
 
 ---
 
-## 🔍 Verification & Audit Evidence
+## Verification and Audit Evidence
 
 ### 1. Ingestion & Dead Letter Queue (DLQ)
 - Valid records are passed to `TOPIC_VALID`.
@@ -199,7 +198,7 @@ Source Citations:
 
 ---
 
-## ❓ Troubleshooting Guide
+## Troubleshooting Guide
 
 | Issue | Root Cause | Solution |
 |---|---|---|
@@ -209,16 +208,16 @@ Source Citations:
 
 ---
 
-## 👥 Contributors & Git History
+## Contributors and Git History
 
 This project was developed by team members:
 - **Alanoud Alotaibi** ([@Alanoud-Alotaibi](https://github.com/Alanoud-Alotaibi))
-- **Rawan Alqahtani** ([@Rawan1H](https://github.com/Rawan1H))
+- **Rawan Hamad** ([@Rawan1H](https://github.com/Rawan1H))
 - **Reem Alshathri** ([@ReemAlshathri74](https://github.com/ReemAlshathri74))
 
 ---
 
-## 🎓 Academic Attribution & Acknowledgments
+## Academic Attribution and Acknowledgments
 
 This capstone project was delivered as part of the **SDAIA Academy Data Engineering Training Program**.
 

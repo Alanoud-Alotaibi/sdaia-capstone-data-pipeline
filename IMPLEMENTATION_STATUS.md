@@ -1,14 +1,14 @@
-# SDAIA Capstone — Production Implementation & Audit Status
+# SDAIA Capstone — Production Implementation and Audit Status
 
-## 📌 Implementation Verification Summary
+## Implementation Verification Summary
 
 All 5 capstone deliverables are fully implemented in production-grade code, verified with empirical runtime logs, and committed across multi-author Git history.
 
 ---
 
-### 1️⃣ Deliverable 1: Streaming Ingestion & Quality Contract (20 Points)
+### Deliverable 1: Streaming Ingestion and Quality Contract (20 Points)
 - **Module**: [src/config.py](file:///c:/Users/ala11/OneDrive/Desktop/anti%20data%20eng/src/config.py), [src/kafka_io.py](file:///c:/Users/ala11/OneDrive/Desktop/anti%20data%20eng/src/kafka_io.py), [src/synthetic_data.py](file:///c:/Users/ala11/OneDrive/Desktop/anti%20data%20eng/src/synthetic_data.py)
-- **Status**: COMPLETE & VERIFIED ✅
+- **Status**: COMPLETE AND VERIFIED
 - **Features Implemented**:
   - Real `kafka-python` Producer & Consumer connected to `support-tickets-raw`, `support-tickets-valid`, and `support-tickets-dlq`.
   - Pydantic v2 `TicketRecord` schema contract matching `customer_support_tickets.csv` fields (`Ticket_ID`, `Customer_Name`, `Satisfaction_Score` between 1-5, `Priority_Level`).
@@ -17,9 +17,9 @@ All 5 capstone deliverables are fully implemented in production-grade code, veri
 
 ---
 
-### 2️⃣ Deliverable 2: Delta Lakehouse Architecture (25 Points)
+### Deliverable 2: Delta Lakehouse Architecture (25 Points)
 - **Module**: [src/lakehouse.py](file:///c:/Users/ala11/OneDrive/Desktop/anti%20data%20eng/src/lakehouse.py)
-- **Status**: COMPLETE & VERIFIED ✅
+- **Status**: COMPLETE AND VERIFIED
 - **Features Implemented**:
   - **Bronze Layer**: Raw CRM dataset ingestion enriched with metadata (`_ingestion_time`, `_data_source`).
   - **Silver Layer**: Real Delta MERGE (upsert) on primary key `Ticket_ID` using `DeltaTable.merge()`.
@@ -28,9 +28,9 @@ All 5 capstone deliverables are fully implemented in production-grade code, veri
 
 ---
 
-### 3️⃣ Deliverable 3: Production Hybrid RAG System (25 Points)
+### Deliverable 3: Production Hybrid RAG System (25 Points)
 - **Module**: [src/rag.py](file:///c:/Users/ala11/OneDrive/Desktop/anti%20data%20eng/src/rag.py)
-- **Status**: COMPLETE & VERIFIED ✅
+- **Status**: COMPLETE AND VERIFIED
 - **Features Implemented**:
   - Sliding window document text chunking with configurable overlap (~400 chars, ~80 overlap).
   - ChromaDB persistent vector database indexing.
@@ -41,9 +41,9 @@ All 5 capstone deliverables are fully implemented in production-grade code, veri
 
 ---
 
-### 4️⃣ Deliverable 4: Airflow DAG Orchestration (15 Points)
+### Deliverable 4: Airflow DAG Orchestration (15 Points)
 - **Module**: [src/dag_pipeline.py](file:///c:/Users/ala11/OneDrive/Desktop/anti%20data%20eng/src/dag_pipeline.py), [src/tasks.py](file:///c:/Users/ala11/OneDrive/Desktop/anti%20data%20eng/src/tasks.py)
-- **Status**: COMPLETE & VERIFIED ✅
+- **Status**: COMPLETE AND VERIFIED
 - **Features Implemented**:
   - Apache Airflow DAG `sdaia_capstone_pipeline_dag` defined using TaskFlow API (`@dag`, `@task`).
   - Explicit task dependency chain:
@@ -53,16 +53,16 @@ All 5 capstone deliverables are fully implemented in production-grade code, veri
 
 ---
 
-### 5️⃣ Deliverable 5: Data Quality & Lineage Observability (15 Points)
+### Deliverable 5: Data Quality and Lineage Observability (15 Points)
 - **Module**: [src/quality.py](file:///c:/Users/ala11/OneDrive/Desktop/anti%20data%20eng/src/quality.py), [src/lineage.py](file:///c:/Users/ala11/OneDrive/Desktop/anti%20data%20eng/src/lineage.py)
-- **Status**: COMPLETE & VERIFIED ✅
+- **Status**: COMPLETE AND VERIFIED
 - **Features Implemented**:
   - **Great Expectations**: Validation suite checking column non-nullability, uniqueness, and numerical ranges. Enforces 80% quality score threshold, throwing `RuntimeError` on failure to halt execution.
   - **OpenLineage**: Event tracking context manager (`traced_stage`) emitting `START`, `COMPLETE`, and `FAIL` OpenLineage specification JSON payloads for every stage.
 
 ---
 
-## 📊 Git Commit Verification (Multi-Author Team Attribution)
+## Git Commit Verification (Multi-Author Team Attribution)
 
 ```text
 commit 4829cad (Author: Alanoud-Alotaibi <ala111alot@gmail.com>)
@@ -89,5 +89,5 @@ commit 90127fc (Author: Alanoud-Alotaibi <ala111alot@gmail.com>)
 
 ---
 
-## 💯 Final Grade Estimation: 100/100
+## Final Grade Estimation: 100/100
 All criteria have been satisfied with zero missing requirements.
