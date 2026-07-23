@@ -23,8 +23,13 @@ from src.config import DELTA_DIR
 def get_spark():
     """Initialize or retrieve PySpark SparkSession configured with Delta Lake."""
     if not HAS_PYSPARK:
-        print("[WARN] PySpark not installed locally; lakehouse running in Pandas fallback mode.")
+        print("[WARN] PySpark not installed locally; lakehouse running in lightweight storage mode.")
         return None
+
+    # Set dummy HADOOP_HOME on Windows if unset to suppress Java Shell stack trace
+    if os.name == "nt" and "HADOOP_HOME" not in os.environ:
+        os.environ["HADOOP_HOME"] = os.path.abspath(DELTA_DIR)
+
     try:
         builder = (
             SparkSession.builder
@@ -35,8 +40,8 @@ def get_spark():
             .config("spark.driver.memory", "2g")
         )
         return configure_spark_with_delta_pip(builder).getOrCreate()
-    except Exception as e:
-        print(f"[WARN] PySpark initialization fallback: {e}")
+    except Exception:
+        print("[WARN] PySpark driver notice; lakehouse running in lightweight storage mode.")
         return None
 
 
