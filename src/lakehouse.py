@@ -4,6 +4,7 @@ Supports ACID transactions, real MERGE (upsert) on business key (Ticket_ID), and
 """
 
 import os
+import shutil
 from datetime import datetime
 from typing import Dict, Any, Union
 
@@ -26,9 +27,13 @@ def get_spark():
         print("[WARN] PySpark not installed locally; lakehouse running in lightweight storage mode.")
         return None
 
-    # Set dummy HADOOP_HOME on Windows if unset to suppress Java Shell stack trace
-    if os.name == "nt" and "HADOOP_HOME" not in os.environ:
-        os.environ["HADOOP_HOME"] = os.path.abspath(DELTA_DIR)
+    # Check for native Windows winutils before invoking JVM SparkSubmit
+    if os.name == "nt":
+        hadoop_home = os.environ.get("HADOOP_HOME", "")
+        winutils_found = hadoop_home and os.path.exists(os.path.join(hadoop_home, "bin", "winutils.exe"))
+        if not winutils_found and not shutil.which("winutils"):
+            print("[WARN] Windows native Hadoop winutils not detected; lakehouse running in local storage engine mode.")
+            return None
 
     try:
         builder = (
@@ -41,7 +46,7 @@ def get_spark():
         )
         return configure_spark_with_delta_pip(builder).getOrCreate()
     except Exception:
-        print("[WARN] PySpark driver notice; lakehouse running in lightweight storage mode.")
+        print("[WARN] PySpark JVM driver notice; lakehouse running in lightweight storage engine mode.")
         return None
 
 
